@@ -357,3 +357,4 @@ REMOTE_PLATFORMS = ("rbe_ubuntu2004",)
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+MODULE.bazel.lock.dist
