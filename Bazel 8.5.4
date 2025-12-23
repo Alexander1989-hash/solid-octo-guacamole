@@ -1,0 +1,108 @@
+# 1. Create and enter the directory
+mkdir solid-octo-guacamole
+cd solid-octo-guacamole
+git init
+
+# 2. Embed Bazelisk (Linux x64 — most common for CI and local dev)
+curl -Lo bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-linux-amd64
+chmod +x bazel
+
+# For macOS Intel: use bazelisk-darwin-amd64
+# For macOS Apple Silicon: use bazelisk-darwin-arm64
+# For Windows: download bazelisk-windows-amd64.exe and rename to bazel.exe
+
+# 3. Pin Bazel version
+echo "8.5.1" > .bazelversion
+
+# 4. Create MODULE.bazel (modern dependency system)
+cat > MODULE.bazel <<'EOF'
+module(
+    name = "solid_octo_guacamole",
+    version = "0.1.0",
+)
+
+bazel_dep(name = "rules_go", version = "0.50.1")
+bazel_dep(name = "rules_java", version = "7.7.0")
+
+go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
+go_sdk.download(version = "1.23.3")
+EOF
+
+# 5. Create source directory and files
+mkdir lib
+
+cat > lib/widget.go <<'EOF'
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Solid Octo Guacamole Widget Activated!")
+}
+EOF
+
+cat > lib/hello.go <<'EOF'
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello from Solid Octo Guacamole!")
+}
+EOF
+
+cat > lib/こんにちは.java <<'EOF'
+public class こんにちは {
+    public static void main(String[] args) {
+        System.out.println("こんにちは、Solid Octo Guacamole!");
+    }
+}
+EOF
+
+# 6. Create the BUILD file for lib/
+cat > lib/BUILD <<'EOF'
+load("@rules_go//go:defs.bzl", "go_binary", "go_library")
+load("@rules_java//java:defs.bzl", "java_binary")
+
+go_library(
+    name = "widget_lib",
+    srcs = ["widget.go"],
+    importpath = "github.com/alexander1989-hash/solid-octo-guacamole/widget",
+    visibility = ["//visibility:public"],
+)
+
+go_binary(
+    name = "widget",
+    embed = [":widget_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_binary(
+    name = "hello_go",
+    srcs = ["hello.go"],
+)
+
+java_binary(
+    name = "hello_java",
+    srcs = ["こんにちは.java"],
+    main_class = "こんにちは",
+)
+EOF
+
+# 7. Optional: empty root BUILD file (Bazel likes having one)
+touch BUILD
+
+# 8. Create README.md
+cat > README.md <<'EOF'
+# solid-octo-guacamole
+
+A fun Bazel-powered project with Go and Java examples.
+
+## Quick Start (No Bazel installation needed!)
+
+```bash
+git clone https://github.com/alexander1989-hash/solid-octo-guacamole.git
+cd solid-octo-guacamole
+./bazel build //lib:all          # Build everything
+./bazel run //lib:widget         # Run Go widget
+./bazel run //lib:hello_java     # Run Java hello
