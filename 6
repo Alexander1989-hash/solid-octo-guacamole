@@ -1,0 +1,20 @@
+# Force Java to use UTF-8 for source files
+build --javacopt="-encoding UTF-8"
+
+# Optional: Ensure Go builds are reproducible by pinning the platform
+build --platforms=@rules_go//go/toolchain:linux_amd64  # Or your specific host
+load("@gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/yourusername/my_project
+gazelle(name = "gazelle")
+
+# This allows you to update dependencies in MODULE.bazel from go.mod
+gazelle(
+    name = "gazelle-update-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)
