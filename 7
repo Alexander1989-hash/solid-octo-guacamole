@@ -1,0 +1,17 @@
+{{ #navLinks }} 
+
+{{ name }}
+
+{{ /navLinks }} {{ #navLinksWithGenerics }} 
+
+{{ name }}{{ #hasGenericParameters }}{{{ genericParameters }}}{{ /hasGenericParameters }}
+
+{{ /navLinksWithGenerics }} {{ ^hasHomepage }} 
+
+{{{ layoutTitle }}}
+
+{{ /hasHomepage }} {{ #hasHomepage }} 
+
+{{{ layoutTitle }}} 
+
+{{ /hasHomepage }}  
